@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Document</title>
+		<style>
+			:root {
+				/* 默认亮主题 */
+				--bg-color: #fff;
+				--color: #000;
+				background-color: var(--bg-color);
+				color: var(--color);
+			}
+			:root.dark {
+				/* 暗主题 */
+				--bg-color: #000;
+				--color: #fff;
+			}
+			::view-transition-new(root),
+			::view-transition-old(root) {
+				/* 关闭默认动画 */
+				animation: none;
+			}
+			.dark::view-transition-old(root) {
+				z-index: 9999;
+			}
+			.h1 {
+				text-align: center;
+			}
+		</style>
+	</head>
+	<body>
+		<button id="themeButton">切换主题</button>
+		<h1 class="h1">主题切换</h1>
+
+		<script>
+			const themeButton = document.getElementById("themeButton");
+			themeButton.addEventListener("click", (e) => {
+				// 执行切换主题的操作
+				const transition = document.startViewTransition(() => {
+					// 动画过渡切换主题色
+					document.documentElement.classList.toggle("dark");
+				});
+
+				// document.startViewTransition 的 ready 返回一个 Promise
+				transition.ready.then(() => {
+					// 获取鼠标的坐标
+					const { clientX, clientY } = e;
+
+					// 计算最大半径
+					const radius = Math.hypot(
+						Math.max(clientX, innerWidth - clientX),
+						Math.max(clientY, innerHeight - clientY)
+					);
+
+					const isDark = document.documentElement.classList.contains("dark");
+					const clipPath = [
+						`circle(0px at ${clientX}px ${clientY}px)`,
+						`circle(${radius}px at ${clientX}px ${clientY}px)`,
+					];
+
+					// 圆形动画扩散开始
+					document.documentElement.animate(
+						{ clipPath: isDark ? clipPath.reverse() : clipPath },
+						// 设置时间，已经目标伪元素
+						{
+							duration: 500,
+							pseudoElement: isDark
+								? "::view-transition-old(root)"
+								: "::view-transition-new(root)",
+						}
+					);
+				});
+			});
+		</script>
+	</body>
+</html>

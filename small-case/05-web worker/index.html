@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Document</title>
+	</head>
+	<body>
+		<script>
+			const worker = new Worker("./worker.js");
+
+			worker.postMessage("发送消息给子线程");
+
+			worker.onmessage = (e) => {
+				console.log("收到子线程的消息:", e.data);
+				if (e.data === "close") {
+					worker.terminate();
+				}
+			};
+		</script>
+	</body>
+</html>

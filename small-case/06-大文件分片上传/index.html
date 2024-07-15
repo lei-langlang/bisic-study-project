@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Document</title>
+	</head>
+	<body>
+		<input id="fileInput" type="file" />
+
+		<script src="./utils.js"></script>
+		<script>
+			const worker = new Worker("./worker.js");
+			const el = document.getElementById("fileInput");
+			// 文件分片列表
+			let fileChunkList = [];
+			// 进度
+			let progress = 0;
+
+			el.addEventListener("change", (e) => {
+				const file = e.target.files[0];
+				// 获取整个文件的hash
+				worker.postMessage({ file, isHoleFile: true, index: -1 });
+
+				// 分片
+				fileChunkList = createFileChunk(file);
+				fileChunkList.forEach(async (item) => {
+					// 传递给子线程 worker, 生成文件hash
+					worker.postMessage(item);
+				});
+			});
+
+			// 接收子线程的消息
+			worker.onmessage = async (e) => {
+				const { isHoleFile, index, hash } = e.data;
+				if (isHoleFile) {
+					// 秒传处理，根据整个文件的hash，判断后端是否已经有这个文件了，如果有，就不用再上传了
+					if (await getChunkIsUpload(hash)) {
+            console.log("已经上传了");
+						// 控制进度条
+						controlProgress(index);
+					}
+				} else {
+					// 分片处理
+					// 先根据hash请求服务器上是否有这个文件，如果有，就不用上传了
+					console.log(`判断第 ${index} 片是否已经在服务器上了`);
+					const isUpload = await getChunkIsUpload(hash);
+					if (isUpload) {
+						console.log(`服务器上已经有了第 ${index} 片文件, 取消这个分片的上传`);
+					} else {
+						await uploadChunk(e.data);
+					}
+				}
+				// 控制进度条
+				controlProgress(index);
+			};
+
+			// 控制进度条
+			function controlProgress(index) {
+				if (progress == 100) return;
+				if (index === -1 || index == fileChunkList.length - 1) {
+					progress = 100;
+				}
+
+				// 上传完成，关闭子线程
+				if (progress == 100) {
+					console.log("》》》》》》》》》》  上传完成，关闭子线程");
+					worker.terminate();
+				}
+			}
+
+			// 请求方法，判断服务器上是否有这个文件
+			async function getChunkIsUpload(hash) {
+				return new Promise((resolve, reject) => {
+					setTimeout(() => {
+						resolve(Math.random() > 0.5);
+					}, 500);
+				});
+			}
+
+			// 文件上传的请求方法
+			async function uploadChunk(chunk) {
+				return new Promise((resolve, reject) => {
+					setTimeout(() => {
+						console.log(`服务器上没有这个分片, 开始上传第 ${chunk.index} 片, 原始数据为:`, chunk);
+						resolve();
+					}, 1000);
+				});
+			}
+		</script>
+	</body>
+</html>

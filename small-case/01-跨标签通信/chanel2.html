@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>第二个标签页</title>
+  </head>
+  <body>
+    <button id="btn">发送消息</button>
+    <script src="./index.js"></script>
+    <script>
+      const btn = document.querySelector("#btn");
+      btn.addEventListener("click", () => {
+        // 向 chanel1.html 发送消息
+        sendMessage("send-msg-to-chanel1", "发送给第一个标签页的消息");
+      });
+
+      // 监听 chanel1.html 发送的消息
+      receiveMessage((data) => {
+        console.log(data);
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>视差滚动</title>
+		<style>
+			* {
+				margin: 0;
+				padding: 0;
+			}
+			.box-container {
+				position: relative;
+				height: 180px;
+				overflow: hidden;
+			}
+			.box {
+				position: absolute;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 180px;
+			}
+			.box img {
+				width: 100%;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="container" class="box-container">
+			<div class="box">
+				<img src="./img/01.webp" />
+			</div>
+			<div class="box">
+				<img src="./img/02.webp" />
+			</div>
+			<div class="box">
+				<img src="./img/03.webp" />
+			</div>
+			<div class="box">
+				<img src="./img/04.webp" />
+			</div>
+			<div class="box">
+				<img src="./img/05.webp" />
+			</div>
+			<div class="box">
+				<img src="./img/06.webp" />
+			</div>
+			<div class="box">
+				<img src="./img/07.webp" />
+			</div>
+
+			<div class="box">
+				<img src="./img/09.webp" />
+			</div>
+			<div class="box">
+				<img src="./img/10.webp" />
+			</div>
+			<div class="box">
+				<img src="./img/11.webp" />
+			</div>
+			<div class="box">
+				<img src="./img/08.webp" />
+			</div>
+			<div class="box">
+				<img src="./img/12.webp" />
+			</div>
+			<div class="box">
+				<img src="./img/13.webp" />
+			</div>
+			<div class="box">
+				<img src="./img/14.webp" />
+			</div>
+			<div class="box">
+				<img src="./img/15.webp" />
+			</div>
+			<div class="box">
+				<img src="./img/16.webp" />
+			</div>
+			<div class="box">
+				<img src="./img/17.webp" />
+			</div>
+			<div class="box">
+				<img src="./img/18.webp" />
+			</div>
+		</div>
+
+		<script>
+			const container = document.getElementById("container");
+			const boxes = document.querySelectorAll(".box");
+			let originalX = 0;
+			const translate = {};
+
+			// 鼠标移入
+			container.addEventListener("mouseenter", (e) => {
+				originalX = e.clientX;
+			});
+
+			// 鼠标移出
+			container.addEventListener("mouseleave", (e) => {
+				// 距离进入的位置
+				boxes.forEach((box, index) => {
+					if (index > 0) {
+						boxes[index].style.transition = "0.3s all";
+						boxes[index].style.transform = `translateX(0px)`;
+					}
+				});
+			});
+
+			// 鼠标移动
+			container.addEventListener("mousemove", (e) => {
+				const distance = e.clientX - originalX;
+				boxes.forEach((box, index) => {
+					if (index > 0) {
+						translate[index] = distance / (2 * index);
+						boxes[index].style.transition = "none";
+						boxes[index].style.transform = `translateX(${translate[index]}px)`;
+					}
+				});
+			});
+		</script>
+	</body>
+</html>

@@ -1,0 +1,90 @@
+* {
+	margin: 0;
+	padding: 0;
+}
+.back1 {
+	width: 100vw;
+	height: 100vh;
+	background-color: rgba(0, 0, 0, 0.1);
+	background-image: url("./img/back1-bg.jpg");
+	background-size: 1920px 920px;
+	position: relative;
+}
+.cloud1 {
+	position: absolute;
+	top: 30px;
+	left: 100px;
+	opacity: 0.7;
+	animation: moveCloud1 5s linear infinite;
+}
+.cloud2 {
+	position: absolute;
+	top: 150px;
+	left: 1200px;
+	transform: scale(0.3);
+	opacity: 0.7;
+	transition: all 5s;
+}
+.cloud3 {
+	position: absolute;
+	top: 320px;
+	left: 700px;
+	transform: scale(0.7);
+	opacity: 0.4;
+	transition: all 5s;
+}
+
+@keyframes moveCloud1 {
+	0% {
+		top: 30px;
+		left: 100px;
+		opacity: 0.7;
+	}
+	15% {
+		top: -20px;
+		left: 160px;
+		opacity: 0.5;
+	}
+	30% {
+		top: -70px;
+		left: 220px;
+		opacity: 0.3;
+	}
+	45% {
+		top: -120px;
+		left: 280px;
+		opacity: 0.2;
+	}
+
+
+	51% {
+		top: -150px;
+		left: -220px;
+		opacity: 0.5;
+	}
+	52% {
+		top: 150px;
+		left: -277px;
+		opacity: 0.5;
+	}
+
+
+  65% {
+
+  }
+  70% {
+    top: 150px;
+		left: -30px;
+		opacity: 0.5;
+  }
+	85% {
+		top: 90px;
+		left: 30px;
+		opacity: 0.5;
+	}
+	100% {
+		top: 30px;
+		left: 100px;
+		opacity: 0.7;
+	}
+}

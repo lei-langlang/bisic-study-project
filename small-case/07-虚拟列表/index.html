@@ -9,58 +9,53 @@
 			type="application/javascript"
 		></script>
 		<style>
-			.infinite-list-container {
-				height: 100%;
-				overflow: auto;
+			.virtual-list {
+				width: 300px;
+				height: 500px;
+				margin: 0 auto;
 				position: relative;
-				-webkit-overflow-scrolling: touch;
+				border: 1px solid #ccc;
+				overflow-y: auto;
 			}
-
-			.infinite-list-phantom {
+			.list-container {
 				position: absolute;
 				left: 0;
 				top: 0;
-				right: 0;
-				z-index: -1;
+				width: 100%;
 			}
-
-			.infinite-list {
-				left: 0;
-				right: 0;
-				top: 0;
-				position: absolute;
+			.list-item {
+				height: 50px;
+				line-height: 50px;
 				text-align: center;
 			}
-
-			.infinite-list-item {
-				padding: 10px;
-				color: #555;
-				box-sizing: border-box;
-				border-bottom: 1px solid #999;
+			.list-item:nth-child(2n) {
+				background-color: #d6d2d2;
 			}
 		</style>
 	</head>
 	<body>
 		<div id="app">
 			<template>
-				<div
-					ref="list"
-					class="infinite-list-container"
-					@scroll="scrollEvent($event)"
-				>
+				<div ref="virtualListRef" class="virtual-list" @scroll="handleScroll">
+					<!-- 占位容器 高度和数据的真实高度一致 用于形成滚动条 phantom: 幻影 -->
 					<div
-						class="infinite-list-phantom"
-						:style="{ height: listHeight + 'px' }"
+						class="list-container-phantom"
+						:style="{ height: `${dataTotalHeight}px` }"
 					></div>
-					<div class="infinite-list" :style="{ transform: getTransform }">
+
+					<!-- 真实的列表容器 -->
+					<div
+						class="list-container"
+						:style="{transform: 'translateY(' + offsetStyle + ')'}"
+					>
 						<div
-							ref="items"
-							class="infinite-list-item"
-							v-for="item in visibleData"
+							v-for="item in dataDisplay"
 							:key="item.id"
-							:style="{ height: itemSize + 'px',lineHeight: itemSize + 'px' }"
+							ref="listItemsRef"
+							class="list-item"
+							:data-position-idx="item.id"
 						>
-							{{ item.value }}
+							<span> {{ item.content }} </span>
 						</div>
 					</div>
 				</div>
@@ -69,64 +64,58 @@
 		<script>
 			new Vue({
 				el: "#app",
-
 				data() {
 					return {
-						//可视区域高度
-						screenHeight: 0,
-						//偏移量
-						startOffset: 0,
-						//起始索引
-						start: 0,
-						//结束索引
-						end: null,
-						//列表数据
-						listData: [],
-						//列表项高度
-						itemSize: 50,
+						data: [],
+						startIdx: 0,
+						endIdx: 0,
+						itemHeight: 50,
+						visibleAreaHeight: 0,
+						offset: 0,
 					};
 				},
 				computed: {
-					//列表总高度
-					listHeight() {
-						return this.listData.length * this.itemSize;
+					dataDisplay() {
+						return this.data.slice(this.startIdx, this.endIdx);
 					},
-					//可显示的列表项数
-					visibleCount() {
-						return Math.ceil(this.screenHeight / this.itemSize);
+					dataTotalHeight() {
+						return this.data.length * this.itemHeight;
 					},
-					//偏移量对应的style
-					getTransform() {
-						return `translate3d(0,${this.startOffset}px,0)`;
+					visualAreaItemCount() {
+						return Math.ceil(this.visibleAreaHeight / this.itemHeight);
 					},
-					//获取真实显示列表数据
-					visibleData() {
-						return this.listData.slice(
-							this.start,
-							Math.min(this.end, this.listData.length)
-						);
+					offsetStyle() {
+						return `${this.offset}px`;
 					},
 				},
-				created() {
-					for (let i = 0; i < 1000; i++) {
-						this.listData.push({ id: i, value: i });
-					}
-				},
-				mounted() {
-					this.screenHeight = this.$el.clientHeight;
-					this.start = 0;
-					this.end = this.start + this.visibleCount;
+				async mounted() {
+					this.data = await this.getData();
+					this.$nextTick(() => {
+						this.visibleAreaHeight = this.$refs.virtualListRef.clientHeight;
+						this.startIdx = 0;
+						this.endIdx = this.startIdx + this.visualAreaItemCount;
+					});
 				},
 				methods: {
-					scrollEvent() {
-						//当前滚动位置
-						let scrollTop = this.$refs.list.scrollTop;
-						//此时的开始索引
-						this.start = Math.floor(scrollTop / this.itemSize);
-						//此时的结束索引
-						this.end = this.start + this.visibleCount;
-						//此时的偏移量
-						this.startOffset = scrollTop - (scrollTop % this.itemSize);
+					// 获取数据
+					async getData() {
+						return new Promise((resolve, reject) => {
+							const data = [];
+							for (let i = 0; i < 100000; i++) {
+								data.push({ id: i + 1, content: "content - " + (i + 1) });
+							}
+							setTimeout(() => {
+								resolve(data);
+							}, 300);
+						});
+					},
+
+					// 滚动事件
+					handleScroll(e) {
+						const scrollTop = e.target.scrollTop;
+						this.startIdx = ~~(scrollTop / this.itemHeight);
+						this.endIdx = this.startIdx + this.visualAreaItemCount;
+						this.offset = scrollTop;
 					},
 				},
 			});

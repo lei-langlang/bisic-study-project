@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>精简对象</title>
+	</head>
+	<body>
+		<script>
+			/*
+			     现给定一个对象或数组 obj，返回一个 精简对象 。
+			     精简对象 与原始对象相同，只是将包含 假 值的键移除。该操作适用于对象及其嵌套对象。数组被视为索引作为键的对象。当 Boolean(value) 返回 false 时，值被视为 假 值。
+			     你可以假设 obj 是 JSON.parse 的输出结果。换句话说，它是有效的 JSON。
+
+			     示例 1：
+			     输入：obj = [null, 0, false, 1]
+			     输出：[1]
+			     解释：数组中的所有假值已被移除。
+
+			     示例 2：
+			     输入：obj = {"a": null, "b": [false, 1]}
+			     输出：{"b": [1]}
+			     解释：obj["a"] 和 obj["b"][0] 包含假值，因此被移除。
+
+			     示例 3：
+			     输入：obj = [null, 0, 5, [0], [false, 16]]
+			     输出：[5, [], [16]]
+			     解释：obj[0], obj[1], obj[3][0], 和 obj[4][0] 包含假值，因此被移除。
+			   */
+
+			/**
+			 * @param {Object|Array} obj
+			 * @return {Object|Array}
+			 */
+			// var compactObject = function (obj) {
+			// 	const method = (obj) => {
+			// 		if (isObj(obj)) {
+			// 			for (let key in obj) {
+			// 				if (isObj(obj[key]) || isArr(obj[key])) {
+			// 					method(obj[key]);
+			// 				} else {
+			// 					if (!Boolean(obj[key])) {
+			// 						delete obj[key];
+			// 					}
+			// 				}
+			// 			}
+			// 		} else if (isArr(obj)) {
+			// 			const keys = Object.keys(obj);
+			// 			for (let i = keys.length - 1; i >= 0; i--) {
+			// 				if (isObj(obj[i]) || isArr(obj[i])) {
+			// 					method(obj[i]);
+			// 				} else {
+			// 					if (!Boolean(obj[i])) {
+			// 						obj.splice(i, 1);
+			// 					}
+			// 				}
+			// 			}
+			// 		}
+			// 	};
+			// 	method(obj);
+			// 	return obj;
+			// };
+
+			var compactObject = function (obj) {
+				if (!obj || (!isObj(obj) && !isArr(obj))) return obj;
+
+				if (isArr(obj)) {
+					const res = [];
+					for (let i = 0; i < obj.length; i++) {
+						const val = compactObject(obj[i]);
+						if (val) res.push(val);
+					}
+					return res;
+				} else {
+					const res = {};
+					for (let key in obj) {
+						const val = compactObject(obj[key]);
+						if (val) res[key] = val;
+					}
+					return res;
+				}
+			};
+
+      const isObj = (obj) => Object.prototype.toString.call(obj) === "[object Object]";
+			const isArr = (obj) => Object.prototype.toString.call(obj) === "[object Array]";
+
+			console.log(">>>>>>>", compactObject([null, 0, false, 1]));
+			console.log(">>>>>>>", compactObject({ a: null, b: [false, 1] }));
+			console.log(">>>>>>>", compactObject([null, 0, 5, [0], [false, 16]]));
+		</script>
+	</body>
+</html>

@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>合并两个有序数组</title>
+		<title>001-合并两个有序数组</title>
 	</head>
 	<body>
 		<script>
@@ -33,6 +33,24 @@
       */
 
 			/**
+			 * 第一种方式
+			 * @param {number[]} nums1
+			 * @param {number} m
+			 * @param {number[]} nums2
+			 * @param {number} n
+			 * @return {void} Do not return anything, modify nums1 in-place instead.
+			 */
+			// var merge = function (nums1, m, nums2, n) {
+			// 	const s = nums1.length - m;
+			// 	nums1.splice(m, s);
+			// 	const s2 = nums2.length - n;
+			// 	nums2.splice(n, s2);
+			// 	nums1.push(...nums2)
+			// 	return nums1.sort((a, b) => a - b);
+			// };
+
+			/**
+			 * 第二种方式
 			 * @param {number[]} nums1
 			 * @param {number} m
 			 * @param {number[]} nums2
@@ -40,12 +58,46 @@
 			 * @return {void} Do not return anything, modify nums1 in-place instead.
 			 */
 			var merge = function (nums1, m, nums2, n) {
-				let len = nums2.length;
-				for (let i = 0; i < len; i++) {
-					nums1[m + i] = nums2[i];
+				let firstIdx = m - 1, // nums1 的当前指针（nums1 中取 m 个数据的数组的最后一位）
+					secondIdx = n - 1, // nums2 的当前指针（nums2 中取 n 个数据的数组的最后一位）
+					tail = m + n - 1; // nums1 的要插入数据位置的指针（初始就是 m+n 个数据组成数组的最后一位）
+
+				// 任何一个指针到达第一个位置时，就结束循环
+				while (firstIdx >= 0 && secondIdx >= 0) {
+					// nums1 中取出的数据的当前项和 nums2 中取出数据的当前项比较
+					if (nums1[firstIdx] > nums2[secondIdx]) {
+						// 如果 nums1 中的数据大，就将 nums1 中的当前指针位置的数据放到插入的位置
+						nums1[tail] = nums1[firstIdx];
+						// nums1 的指针向前移一位
+						firstIdx--;
+					} else {
+						// 如果 nums2 中的数据大，就将 nums2 中的当前指针位置的数据放到插入的位置
+						nums1[tail] = nums2[secondIdx];
+						// nums2 的指针向前移一位
+						secondIdx--;
+					}
+					// 插入数据的位置向前移一位
+					tail--;
 				}
-				nums1.sort((a, b) => a - b);
+
+				// 如果 nums2 没有还有剩余数据，则直接添加到 nums1 中
+				while (secondIdx >= 0) {
+					nums1[tail] = nums2[secondIdx];
+					secondIdx--;
+					tail--;
+				}
+
+				return nums1;
 			};
+
+			const r1 = merge([1, 2, 3, 0, 0, 0], 3, [2, 5, 6, 7, 8], 1);
+			console.log(r1);
+
+			const r2 = merge([1], 1, [], 0);
+			console.log(r2);
+
+			const r3 = merge([0], 0, [1], 1);
+			console.log(r3);
 		</script>
 	</body>
 </html>

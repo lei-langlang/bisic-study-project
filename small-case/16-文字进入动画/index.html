@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/vue/2.6.14/vue.min.js" type="application/javascript"></script>
+    <style>
+      .word-item {
+        display: inline-block;
+        padding: 0 2px;
+        animation: wordMove 1s;
+        font-style: italic;
+      }
+
+      @keyframes wordMove {
+        0% {
+          opacity: 0;
+          transform: translate(-40px, 40px);
+        }
+        100% {
+          opacity: 1;
+          transform: translate(0, 0);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <div v-for="(item, idx) in viewWords" :key="idx" class="word-item">{{ item }}</div>
+    </div>
+
+    <script>
+      new Vue({
+        el: '#app',
+        data() {
+          return {
+            words: ['L', 'E', 'I', '', 'L', 'A', 'N', 'G'],
+            viewWords: [],
+          }
+        },
+        created() {
+          const originWords = JSON.parse(JSON.stringify(this.words))
+          const timer = setInterval(() => {
+            this.viewWords.push(originWords.shift())
+            if (this.viewWords.length === this.words.length) {
+              clearInterval(timer)
+            }
+          }, 300)
+        },
+        methods: {},
+      })
+    </script>
+  </body>
+</html>

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>html2canvas Example</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.3.2/html2canvas.min.js"></script>
+  </head>
+  <body>
+    <div id="capture" style="padding: 10px; background: #f5da55">
+      <h4 style="color: #000">Hello, this is the content to capture.</h4>
+    </div>
+
+    <button onclick="takeScreenshot()">Take Screenshot</button>
+
+    <script>
+      function takeScreenshot() {
+        html2canvas(document.querySelector('#capture')).then((canvas) => {
+          // 可选：将Canvas转换为图像
+          convertCanvasToImage(canvas)
+
+          // 仅仅渲染Canvas到DOM中
+          document.body.appendChild(canvas)
+        })
+      }
+
+      function convertCanvasToImage(canvas) {
+        let image = new Image()
+        image.src = canvas.toDataURL('image/png')
+        image.style.display = 'block'
+        document.body.appendChild(image)
+      }
+    </script>
+  </body>
+</html>

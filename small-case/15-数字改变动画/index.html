@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>15-数字改变动画</title>
+    <script src="https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/vue/2.6.14/vue.min.js" type="application/javascript"></script>
+    <style>
+      .box {
+        /* margin: 100px auto; */
+        display: inline-block;
+        width: 16px;
+        height: 30px;
+        text-align: center;
+        overflow: hidden;
+      }
+      .list {
+        transition: all 0.3s;
+      }
+      .box .item {
+        height: 30px;
+        line-height: 30px;
+      }
+      .action-wrap {
+        text-align: center;
+        margin-top: 300px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <div class="box" v-for="(item, index) in countArr" :key="index">
+        <div class="list" :style="{ transform: getTransform(index) }">
+          <div class="item" id="0">0</div>
+          <div class="item" id="1">1</div>
+          <div class="item" id="2">2</div>
+          <div class="item" id="3">3</div>
+          <div class="item" id="4">4</div>
+          <div class="item" id="5">5</div>
+          <div class="item" id="6">6</div>
+          <div class="item" id="7">7</div>
+          <div class="item" id="8">8</div>
+          <div class="item" id="9">9</div>
+        </div>
+      </div>
+
+      <div class="action-wrap">
+        <button @click="originCount++">按钮</button>
+      </div>
+    </div>
+
+    <script>
+      new Vue({
+        el: '#app',
+        data() {
+          return {
+            originCount: 282,
+            countArr: [],
+            count: 1,
+          }
+        },
+        watch: {
+          originCount: {
+            handler(newV) {
+              let strCount = newV.toString()
+              this.countArr = strCount.split('')
+            },
+            immediate: true,
+          },
+        },
+        methods: {
+          getTransform(index) {
+            if (this.countArr[index].count > 9) {
+              this.countArr[index] = 0
+            }
+            return `translateY(-${this.countArr[index] * 30}px)`
+          },
+        },
+      })
+    </script>
+  </body>
+</html>
